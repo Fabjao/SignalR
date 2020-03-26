@@ -2,11 +2,11 @@
 var connection = new signalR.HubConnectionBuilder().withUrl("/PromoHub").build();
 //caso estive-se em outro end point deveria colocar o https://api.......
 
-connection.start().then(function () {
-    console.info("Conectado!");
-}).catch(function (err) {
-    console.error(err.toString());
-});
+
+start();
+
+connection.onclosed(async () => { await status() });
+
 
 connection.on("CadastradoSucesso", function () {
     var mensagem = document.getElementById("Mensagem");
@@ -69,5 +69,14 @@ if (btnCadastrar != null) {
         }).catch(function (err) {
             console.error(err.toString());
         });
+    });
+}
+
+function start() {
+    connection.start().then(function () {
+        console.info("Conectado!");
+    }).catch(function (err) {
+        console.error(err.toString());
+        setTimeout(() => { start() }, 5000);
     });
 }
